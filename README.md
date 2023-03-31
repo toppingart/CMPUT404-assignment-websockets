@@ -26,7 +26,7 @@ freetests.py is LICENSE'D under a BSD-like license:
 
 From ws4py
 
-Copyright (c) 2011-2014, Sylvain Hellegouarch, Abram Hindle
+Copyright (c) 2011-2023, Sylvain Hellegouarch, Abram Hindle, Elena Xu
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -59,3 +59,41 @@ Contributors
 * Mark Galloway
 * Abram Hindle
 * Cole Mackenzie
+
+* Modications have been made by me on index.html and sockets.py
+  * A majority of sockets.py is based off of broadcaster.py (see references below), and some parts were from my Assignment 4
+  * A majority of index.html is based off broadcast.html (see references below), and some parts were form my Assignment 4
+
+External Sources / References (some from Assignment 4)
+========================
+* https://www.w3schools.com/css/css3_buttons.asp (for creating hoverable buttons)
+  * Author: W3Schools
+  * Copyright 1999-2023 by Refsnes Data. All Rights Reserved.
+  
+* https://www.w3schools.com/howto/howto_js_active_element.asp (for adding an active class to the current element)
+  * Author: W3Schools
+  * Copyright 1999-2023 by Refsnes Data. All Rights Reserved.
+ 
+* https://www.educative.io/answers/how-to-return-the-status-code-in-flask
+  * For understanding how to return status codes in Flask
+  * Contributor: Abhilash
+  * Link to contributor: https://www.educative.io/profile/view/5104289219608576
+  * Copyright ©2023 Educative, Inc. All rights reserved
+  
+* https://github.com/uofa-cmput404/cmput404-slides/tree/master/examples/WebSocketsExamples
+  * To see examples of websockets being used 
+  * The following are licensed under the Apache license, Copyright 2013-2023 Abram Hindle:
+    * broadcaster.py 
+    * chat.py
+    * exercise.py
+    * braodcast.html
+    * chat.html
+    * exercise.html
+    * exercise2.html
+
+Additional References Used
+========================
+* https://sdiehl.github.io/gevent-tutorial/
+  * To get a better understanding of gevent
+* https://docs.python.org/3/library/queue.html#
+  * To get a better understanding of some of the methods used (e.g. put_nowait)
