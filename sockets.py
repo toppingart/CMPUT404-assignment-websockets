@@ -73,8 +73,8 @@ clients = list() # list of clients interacting with the canvas
 # Combined the two functions send_all() and send_all_json()
 def update_for_clients(obj):
     world_obj = json.dumps(obj) # turn object into a string
-    for client in clients:
-        client.put(world_obj)
+    for client in clients: # for each client interacting with the canvas
+        client.put(world_obj) # update the world for each client
 
 class Client:
     def __init__(self):
@@ -89,6 +89,7 @@ class Client:
 @app.route('/')
 def hello():
     '''Return something coherent here.. perhaps redirect to /static/index.html '''
+    # Reference: https://github.com/uofa-cmput404/cmput404-slides/blob/master/examples/WebSocketsExamples/broadcaster.py
     return flask.redirect("/static/index.html")
 
 def read_ws(ws,client):
@@ -113,15 +114,16 @@ def subscribe_socket(ws):
     # XXX: TODO IMPLEMENT ME
     # Reference: https://github.com/uofa-cmput404/cmput404-slides/blob/master/examples/WebSocketsExamples/broadcaster.py
     
-    # for each client that is interacting with the canvas
+    # the clients interacting with the canvas
     client = Client()
     clients.append(client)
+
     greenlet = gevent.spawn( read_ws, ws, client)  # run the greenlet function with the arguments passed in 
 
     try:
         while True:
             current_world = client.get() # the current state of the world
-            ws.send(current_world)
+            ws.send(current_world) 
     except Exception as e:
         print("WS Error %s" % e)
     finally:
@@ -143,6 +145,8 @@ def flask_post_json():
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
     '''update the entities via this interface'''
+
+    # Code from Assignment 4
     if request.method == 'POST':
         json_data = flask_post_json()
         myWorld.set(entity, json_data) # set the data for that entity
@@ -173,6 +177,7 @@ def update(entity):
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''you should probably return the world here'''
+    # Code from Assignment 4
     if request.method == 'GET' or request.method == 'POST':
         return myWorld.world()
     
@@ -180,12 +185,14 @@ def world():
 @app.route("/entity/<entity>")    
 def get_entity(entity):
     '''This is the GET version of the entity interface, return a representation of the entity'''
+    # Code from Assignment 4
     return myWorld.get(entity)
 
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
     '''Clear the world out!'''
+    # Code from Assignment 4
     if request.method == 'GET' or request.method == 'POST':
         myWorld.clear()
         return "Successfully cleared the world out!", 200
