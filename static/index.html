@@ -71,6 +71,7 @@ for (var i = 0; i < buttons.length; i++) {
 // when button is click, change colour of the "brush"
 function changeCurrentColour(colourButton){
     currentColour = colourButton.value
+
 }
 
 world = {};
@@ -317,3 +318,31 @@ setInterval( update, 1000/30.0);
     </script>
 </body>
 </html>
+
+<style>
+
+    .button {
+      transition-duration: 0.4s;
+    }
+    
+    #red-button:hover {
+      background-color: red;
+      color: white;
+    }  
+    
+    #green-button:hover {
+      background-color: green;
+      color: white;
+    }   
+    
+    #blue-button:hover {
+      background-color: blue;
+      color: white;
+    }   
+    
+    .active{
+      background-color: gray;
+      color: white;
+    }
+    
+    </style>
