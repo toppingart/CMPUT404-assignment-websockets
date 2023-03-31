@@ -6,7 +6,7 @@
     <meta content='width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
     <meta name="viewport" content="width=device-width" />
     <meta name="license" content="
-        Copyright 2013 Google, Abram Hindle
+        Copyright 2023 Google, Abram Hindle, Elena Xu
         
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
@@ -22,12 +22,22 @@
     "/>
     <script src="json2.js"></script>
   </head> 
-  <body bgcolor="white" height="100%" width="100%"> 
-    <div id="debug"></div>
-    <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas> 
+  <body bgcolor="black" height="100%" width="100%"> 
 
-    <script>
-      // Fix me
+    <span id="all-colour-buttons">
+        <button type="button" class="c-btn" id="red-button" value="red" onclick="changeCurrentColour(this)">Red</button>
+        <button type="button" class="c-btn" id="green-button" value="green" onclick="changeCurrentColour(this)">Green</button>
+        <button type="button" class= "c-btn active" id="blue-button" value="blue" onclick="changeCurrentColour(this)">Blue</button>
+    </span>
+    
+    <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas> 
+    
+   <script>
+
+/*
+Some aspects below were taken from my CMPUT 404 Assignment 4 Submission
+*/
+
 var canvas = document.getElementById('c');
 var host = window.location.host;
 var context = canvas.getContext("2d");
@@ -40,22 +50,43 @@ function debug(str) {
     var debugDiv = document.getElementById('debug');
     debugDiv.innerHTML = "" + str;
 }
-debug("Test");
+//debug("Test");
+
+// user starts off with blue, listen to which button has been recently clicked on
+// Reference: https://www.w3schools.com/css/css3_buttons.asp , https://www.w3schools.com/howto/howto_js_active_element.asp
+var currentColour = "blue";
+
+var allButtons = document.getElementById("all-colour-buttons");
+
+var buttons = allButtons.getElementsByClassName("c-btn"); // colour button
+
+for (var i = 0; i < buttons.length; i++) {
+  buttons[i].addEventListener("click", function() {
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active"; // make the clicked button active
+  });
+}
+
+// when button is click, change colour of the "brush"
+function changeCurrentColour(colourButton){
+    currentColour = colourButton.value
+}
 
 world = {};
 
 //XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
-        beginPath();                
+        beginPath();              
         lineWidth = 3;
         var x = entity["x"];
         var y = entity["y"];
         //moveTo(x,y);
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
-        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
-        stroke();                                
+        arc(x, y, (entity["radius"])?entity["radius"]:10, 0, 2.0 * Math.PI, false);  
+        fill() // fill instead of stroke                                   
     }
 }
 
@@ -75,7 +106,6 @@ function clearFrame() {
 	fillStyle = "#000";
 	fillRect(0,0,W,H);
     }
-
 }
 
 // This actually draws the frame
@@ -123,8 +153,10 @@ function getPosition(e) {
 
 function addEntity(entity, data) {
     world[entity] = data;
-    drawNextFrame(); // (but should we?)
+
     //XXX: Send a XHTML Request that updates the entity you just modified!
+    socket.send(JSON.stringify(world)) // send updated world
+    //drawNextFrame(); 
 }
 var counter = 0;
 function addEntityWithoutName(data) {
@@ -231,37 +263,42 @@ mouse = (function() {
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    addEntityWithoutName({'x':x,'y':y,'colour':currentColour});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':currentColour});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
-                          'radius':10});
+    addEntityWithoutName({'x':x,'y':y,'colour':currentColour});
 });
 
 
 function update() {
+    drawNextFrame()
     drawFrame();
 }
 
 
 function wsSetup() {
-    var url = "ws://"+host+"/subscribe";   
+    var url = "ws://"+host+"/subscribe";  
     socket = new WebSocket(url);
+    socket.addEventListener("error", (event) => {
+  console.log("WebSocket error: ", event);
+});
     socket.onopen = function() {
         //XXX: TODO What are you going to do here?
+        //drawNextFrame();
     };
     socket.onerror = function(msg) {
         debug("WebSocket Error:" + msg.data);
     };
     socket.onmessage = function(msg) {  
         try {
-            debug("WebSocket Recv:" + msg.data);
-            //XXX: TODO What are you going to do here?            
+            world = JSON.parse(msg.data); // update the world and draw this updated world
+            drawFrame();
+            //XXX: TODO What are you going to do here?          
         } catch (e) {
             alert("socket on message: " + e);
         }
